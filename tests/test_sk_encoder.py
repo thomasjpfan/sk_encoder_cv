@@ -16,27 +16,34 @@ from sk_encoder_cv import (
     TargetRegressorEncoder,
     TargetRegressorEncoderCV,
 )
+from category_encoders import JamesSteinEncoder
+from sklearn.preprocessing import LabelEncoder
 
 DATA_PATH = Path(".") / "data"
 
 
 @pytest.mark.parametrize(
-    "TargetEncoder", [TargetClassifierEncoder, TargetClassifierEncoderCV]
+    "encoder",
+    [
+        TargetClassifierEncoder(),
+        TargetClassifierEncoderCV(),
+        JamesSteinEncoder(),
+    ],
 )
-def test_adult(TargetEncoder):
+def test_adult(encoder):
     """Smoke test for adult dataset."""
 
     adult_path = DATA_PATH / "adult.csv"
     adult_df = pd.read_csv(adult_path)
 
     X = adult_df.drop("class", axis=1)
-    y = adult_df["class"]
+    y = LabelEncoder().fit_transform(adult_df["class"])
 
     prep = ColumnTransformer(
         [
             (
                 "cat",
-                TargetEncoder(),
+                encoder,
                 make_column_selector(dtype_include=["object", "category"]),
             ),
             ("num", "passthrough", make_column_selector(dtype_include="number")),
@@ -51,9 +58,10 @@ def test_adult(TargetEncoder):
 
 
 @pytest.mark.parametrize(
-    "TargetEncoder", [TargetRegressorEncoder, TargetRegressorEncoderCV]
+    "encoder",
+    [TargetRegressorEncoder(), TargetRegressorEncoderCV(), JamesSteinEncoder()],
 )
-def test_ames(TargetEncoder):
+def test_ames(encoder):
     """Smoke test for adult dataset."""
 
     ames_path = DATA_PATH / "ames.csv"
@@ -66,7 +74,7 @@ def test_ames(TargetEncoder):
         [
             (
                 "cat",
-                TargetEncoder(),
+                encoder,
                 make_column_selector(dtype_include=["object", "category"]),
             ),
             ("num", "passthrough", make_column_selector(dtype_include="number")),
