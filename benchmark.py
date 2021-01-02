@@ -57,6 +57,16 @@ DATA_INFOS = {
         data_id=40701,
         is_classification=True,
     ),
+    "dresses_sales": DataInfo(
+        data_name="dresses_sales",
+        data_id=23381,
+        is_classification=True,
+    ),
+    "phishing_websites": DataInfo(
+        data_name="phishing_websites",
+        data_id=4534,
+        is_classification=True,
+    ),
 }
 
 ENCODERS = {
