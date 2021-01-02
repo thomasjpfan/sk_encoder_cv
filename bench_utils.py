@@ -53,7 +53,15 @@ def get_estimator(encoder, data_info):
         ]
     )
 
-    return Pipeline([("prep", prep), ("est", HistGradientEst(random_state=42))])
+    return Pipeline(
+        [
+            ("prep", prep),
+            (
+                "est",
+                HistGradientEst(random_state=42, max_iter=1000, early_stopping=True),
+            ),
+        ]
+    )
 
 
 def get_results_path(results_dir, data_info, encoder_str):
