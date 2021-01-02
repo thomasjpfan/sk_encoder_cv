@@ -52,6 +52,11 @@ DATA_INFOS = {
         data_id=42729,
         is_classification=False,
     ),
+    "churn": DataInfo(
+        data_name="churn",
+        data_id=40701,
+        is_classification=True,
+    ),
 }
 
 ENCODERS = {
