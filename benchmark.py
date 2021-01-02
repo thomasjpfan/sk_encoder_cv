@@ -77,15 +77,15 @@ def run_single_benchmark(data_str, encoder_str, cv, n_jobs, write_result, force)
     data_info = DATA_INFOS[data_str]
     encoder = ENCODERS[encoder_str]
 
-    X, y = fetch_openml_and_clean(data_info=data_info)
-    estimator = get_estimator(encoder, data_info)
-
     results_path = get_results_path(RESULTS_DIR, data_info, encoder_str)
     if results_path.exists() and not force:
         print(
             f"benchmark for {data_str} and {encoder_str} exists pass --force to rerun"
         )
         return
+
+    X, y = fetch_openml_and_clean(data_info=data_info)
+    estimator = get_estimator(encoder, data_info)
 
     if data_info.is_classification:
         scoring = ["average_precision", "roc_auc", "accuracy"]
