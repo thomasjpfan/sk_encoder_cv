@@ -82,7 +82,9 @@ def run_single_benchmark(data_str, encoder_str, cv, n_jobs, write_result, force)
 
     results_path = get_results_path(RESULTS_DIR, data_info, encoder_str)
     if results_path.exists() and not force:
-        print("benchmark for {data_str} and {encoder_str} exists pass --force to rerun")
+        print(
+            f"benchmark for {data_str} and {encoder_str} exists pass --force to rerun"
+        )
         return
 
     if data_info.is_classification:
