@@ -75,15 +75,15 @@ DATA_INFOS = {
 }
 
 ENCODERS = {
-    "SKTargetEncoder": TargetRegressorEncoder(),
-    "SKTargetEncoderCV": TargetRegressorEncoderCV(),
-    "JamesSteinEncoder": JamesSteinEncoder(),
-    "JamesSteinEncoderCV": NestedEncoderCV(JamesSteinEncoder()),
+    "drop": "drop",
     "SKOrdinalEncoder": make_pipeline(
         SimpleImputer(strategy="constant", fill_value="sk_missing"),
         OrdinalEncoder(handle_unknown="use_encoded_value", unknown_value=-1),
     ),
-    "drop": "drop",
+    "SKTargetEncoder": TargetRegressorEncoder(),
+    "SKTargetEncoderCV": TargetRegressorEncoderCV(),
+    "JamesSteinEncoder": JamesSteinEncoder(),
+    "JamesSteinEncoderCV": NestedEncoderCV(JamesSteinEncoder()),
 }
 
 
