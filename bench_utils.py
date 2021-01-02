@@ -24,6 +24,7 @@ class DataInfo:
 
 
 def fetch_openml_and_clean(data_info: DataInfo):
+    print(f"fetching and loading {data_info.data_name} dataset from openml")
     X, y = fetch_openml(data_id=data_info.data_id, return_X_y=True, as_frame=True)
 
     if data_info.columns_to_remove:

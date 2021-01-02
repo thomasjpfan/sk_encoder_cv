@@ -18,13 +18,58 @@ from sk_encoder_cv import TargetRegressorEncoderCV
 
 
 RESULTS_DIR = Path(".") / "results"
+DATA_DIR = Path(".") / "data"
 DATA_INFOS = {
-    "adult": DataInfo(data_name="adult", data_id=179, is_classification=True),
+    "adult": DataInfo(
+        data_name="adult",
+        data_id=179,
+        is_classification=True,
+    ),
     "ames": DataInfo(
         data_name="ames",
         data_id=42165,
         is_classification=False,
         columns_to_remove=["Id"],
+    ),
+    "telco": DataInfo(
+        data_name="telco",
+        data_id=42178,
+        is_classification=True,
+    ),
+    "amazon_access": DataInfo(
+        data_name="amazon_access",
+        data_id=4135,
+        is_classification=True,
+    ),
+    "bng_credit": DataInfo(
+        data_name="bng_credit",
+        data_id=40514,
+        is_classification=True,
+    ),
+    "kicks": DataInfo(
+        data_name="kicks",
+        data_id=41162,
+        is_classification=True,
+    ),
+    "taxi": DataInfo(
+        data_name="taxi",
+        data_id=42729,
+        is_classification=False,
+    ),
+    "bank_marketing": DataInfo(
+        data_name="bank_marketing",
+        data_id=1461,
+        is_classification=True,
+    ),
+    "nomao": DataInfo(
+        data_name="nomao",
+        data_id=1486,
+        is_classification=True,
+    ),
+    "phishing_websites": DataInfo(
+        data_name="phishing_websites",
+        data_id=4534,
+        is_classification=True,
     ),
 }
 
