@@ -9,6 +9,7 @@ from bench_utils import DataInfo
 from bench_utils import fetch_openml_and_clean
 from bench_utils import get_estimator
 from bench_utils import write_results
+from bench_utils import get_results_path
 from sklearn.model_selection import cross_validate
 
 from category_encoders import JamesSteinEncoder
@@ -86,13 +87,18 @@ ENCODERS = {
 }
 
 
-def run_single_benchmark(data_str, encoder_str, cv, n_jobs, write_result):
+def run_single_benchmark(data_str, encoder_str, cv, n_jobs, write_result, force):
     print(f"running benchmark for {data_str} and {encoder_str}")
     data_info = DATA_INFOS[data_str]
     encoder = ENCODERS[encoder_str]
 
     X, y = fetch_openml_and_clean(data_info=data_info)
     estimator = get_estimator(encoder, data_info)
+
+    results_path = get_results_path(RESULTS_DIR, data_info, encoder_str)
+    if results_path.exists() and not force:
+        print("benchmark for {data_str} and {encoder_str} exists pass --force to rerun")
+        return
 
     if data_info.is_classification:
         scoring = ["average_precision", "roc_auc", "accuracy"]
@@ -118,6 +124,7 @@ def _run_single_benchmark(args):
         cv=args.cv,
         n_jobs=args.n_jobs,
         write_result=not args.no_write,
+        force=args.force,
     )
 
 
@@ -125,7 +132,7 @@ def _run_all_benchmark(args):
     print("running all benchmarks")
     for data_str, encoder_str in product(DATA_INFOS, ENCODERS):
         run_single_benchmark(
-            data_str, encoder_str, args.cv, args.n_jobs, not args.no_write
+            data_str, encoder_str, args.cv, args.n_jobs, not args.no_write, args.force
         )
 
 
@@ -134,6 +141,7 @@ if __name__ == "__main__":
     parser.add_argument("--cv", default=5, type=int)
     parser.add_argument("--n-jobs", default=1, type=int)
     parser.add_argument("--no-write", action="store_true")
+    parser.add_argument("--force", action="store_true")
 
     subparsers = parser.add_subparsers()
 

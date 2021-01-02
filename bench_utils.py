@@ -56,6 +56,10 @@ def get_estimator(encoder, data_info):
     return Pipeline([("prep", prep), ("est", HistGradientEst(random_state=42))])
 
 
+def get_results_path(results_dir, data_info, encoder_str):
+    return results_dir / f"{data_info.data_name}_{encoder_str}.json"
+
+
 def write_results(results, results_dir, data_info, encoder_str, cv, write_results):
     # process results
     output = {}
@@ -72,6 +76,7 @@ def write_results(results, results_dir, data_info, encoder_str, cv, write_result
 
     if write_results:
         results_path = results_dir / f"{data_info.data_name}_{encoder_str}.json"
+        results_path = get_results_path(results_dir, data_info, encoder_str)
 
         with results_path.open("w") as f:
             json.dump(output, f)
