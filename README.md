@@ -1,6 +1,6 @@
 # Benchmarks for Target Encoder
 
-Benchmarks for different forms of target encoder.
+Benchmarks for different forms of target encoder with 10-fold cross validation.
 
 ## Datasets
 
