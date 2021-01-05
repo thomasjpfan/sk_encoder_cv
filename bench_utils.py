@@ -1,6 +1,7 @@
 from pprint import pprint
 import json
 from sklearn.datasets import fetch_openml
+from sklearn.model_selection import KFold, StratifiedKFold
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import LabelEncoder
 
@@ -78,7 +79,10 @@ def write_results(results, results_dir, data_info, encoder_str, cv, write_result
     output["data_id"] = data_info.data_id
     output["data_name"] = data_info.data_name
     output["is_classification"] = data_info.is_classification
-    output["cv"] = cv
+    if isinstance(cv, KFold) or isinstance(cv, StratifiedKFold):
+        output["cv"] = str(cv)
+    else:
+        output["cv"] = cv
 
     pprint(output)
 
