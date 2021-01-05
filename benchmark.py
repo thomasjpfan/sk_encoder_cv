@@ -14,7 +14,7 @@ from sklearn.model_selection import cross_validate
 
 from category_encoders import JamesSteinEncoder
 from sk_encoder_cv import NestedEncoderCV
-from sk_encoder_cv import TargetRegressorEncoder
+from sk_encoder_cv import TargetRegressorEncoder, TargetRegressorEncoderBS
 from sk_encoder_cv import TargetRegressorEncoderCV
 
 
@@ -77,6 +77,7 @@ ENCODERS = {
     ),
     "SKTargetEncoder": TargetRegressorEncoder(),
     "SKTargetEncoderCV": TargetRegressorEncoderCV(),
+    "SKTargetEncoderBS": TargetRegressorEncoderBS(),
     "JamesSteinEncoder": JamesSteinEncoder(),
     "JamesSteinEncoderCV": NestedEncoderCV(JamesSteinEncoder()),
 }
