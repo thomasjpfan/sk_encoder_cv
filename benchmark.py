@@ -10,7 +10,7 @@ from bench_utils import fetch_openml_and_clean
 from bench_utils import get_estimator
 from bench_utils import write_results
 from bench_utils import get_results_path
-from sklearn.model_selection import cross_validate
+from sklearn.model_selection import cross_validate, KFold, StratifiedKFold
 
 from category_encoders import JamesSteinEncoder
 from sk_encoder_cv import NestedEncoderCV
@@ -100,7 +100,9 @@ def run_single_benchmark(data_str, encoder_str, cv, n_jobs, write_result, force)
 
     if data_info.is_classification:
         scoring = ["average_precision", "roc_auc", "accuracy"]
+        cv = StratifiedKFold(n_splits=cv, shuffle=True, random_state=42)
     else:
+        cv = KFold(n_splits=cv, shuffle=True, random_state=42)
         scoring = ["neg_mean_squared_error", "r2"]
 
     results = cross_validate(
