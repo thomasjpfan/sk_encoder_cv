@@ -8,8 +8,9 @@ setup(
     packages=find_packages("sk_encoder_cv"),
     install_requires=[
         "pandas==1.2.0",
-        "scikit-learn==0.24.0",
+        "scikit-learn==0.24.1",
         "pytest==6.2.1",
+        "matplotlib",
         "category-encoders==2.2.2",
     ],
     license="MIT",
