@@ -46,6 +46,7 @@ DATA_INFOS = {
         data_name="amazon_access",
         data_id=4135,
         is_classification=True,
+        columns_to_remove=["RESOURCE"],
     ),
     "telco": DataInfo(
         data_name="telco",
@@ -184,7 +185,7 @@ def _run_all_benchmark(args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run benchmarks")
-    parser.add_argument("--cv", default=5, type=int)
+    parser.add_argument("--cv", default=10, type=int)
     parser.add_argument("--n-jobs", default=1, type=int)
     parser.add_argument("--no-write", action="store_true")
     parser.add_argument("--force", action="store_true")

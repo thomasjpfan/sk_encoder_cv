@@ -135,13 +135,13 @@ python setup.py develop
 2. Run single benchmarks:
 
 ```bash
-python benchmark.py --cv 5 --n-jobs 8 single adult
+python benchmark.py single adult
 ```
 
 3. Or run all benchmarks
 
 ```bash
-python benchmark.py --cv 5 --n-jobs 8 all
+python benchmark.py all
 ```
 
 The results will be written into the `results` directory.

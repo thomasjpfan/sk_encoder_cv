@@ -7,7 +7,7 @@ Benchmarks for different forms of target encoder with 10-fold cross validation.
 | data_name         |   categorical features |   n_features |   n_samples | is_classification   | openml_url                     |
 |:------------------|-----------------------:|-------------:|------------:|:--------------------|:-------------------------------|
 | telco             |                     16 |           19 |        7043 | True                | https://www.openml.org/d/42178 |
-| amazon_access     |                      9 |            9 |       32769 | True                | https://www.openml.org/d/4135  |
+| amazon_access     |                      8 |            8 |       32769 | True                | https://www.openml.org/d/4135  |
 | kicks             |                     18 |           32 |       72983 | True                | https://www.openml.org/d/41162 |
 | churn             |                      4 |           20 |        5000 | True                | https://www.openml.org/d/40701 |
 | dresses_sales     |                     11 |           12 |         500 | True                | https://www.openml.org/d/23381 |
@@ -42,13 +42,13 @@ python setup.py develop
 2. Run single benchmarks:
 
 ```bash
-python benchmark.py --cv 5 --n-jobs 8 single adult
+python benchmark.py single adult
 ```
 
 3. Or run all benchmarks
 
 ```bash
-python benchmark.py --cv 5 --n-jobs 8 all
+python benchmark.py all
 ```
 
 The results will be written into the `results` directory.
