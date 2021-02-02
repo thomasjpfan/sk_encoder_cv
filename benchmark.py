@@ -87,14 +87,15 @@ DATA_INFOS = {
         is_classification=True,
     ),
     "census_income_kdd": DataInfo(
-        data_name="census_income_kdd",
-        data_id=42750,
-        is_classification=True
+        data_name="census_income_kdd", data_id=42750, is_classification=True
     ),
     "porto_seguro": DataInfo(
-        data_name="porto_seguro",
-        data_id=42742,
-        is_classification=True
+        data_name="porto_seguro", data_id=42742, is_classification=True
+    ),
+    "Allstate_Claims_Severity": DataInfo(
+        data_name="Allstate_Claims_Severity",
+        data_id=42571,
+        is_classification=False,
     ),
 }
 
