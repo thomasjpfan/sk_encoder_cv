@@ -110,7 +110,7 @@ def run_single_benchmark(data_str, cv, n_jobs, write_result, force):
     previous_results_df = None
     encoder_names = []
 
-    if results_path.exist() and not force:
+    if results_path.exists() and not force:
         previous_results_df = pd.read_csv(results_path)
         encoder_names = previous_results_df["encoder"].tolist()
 
