@@ -12,6 +12,7 @@ Benchmarks for different forms of target encoder with 10-fold cross validation.
 | churn             |                      4 |           20 |        5000 | True                | https://www.openml.org/d/40701 |
 | dresses_sales     |                     11 |           12 |         500 | True                | https://www.openml.org/d/23381 |
 | phishing_websites |                     30 |           30 |       11055 | True                | https://www.openml.org/d/4534  |
+| census_income_kdd |                     28 |           41 |      199523 | True                | https://www.openml.org/d/42750 |
 
 ## Results
 
@@ -21,6 +22,7 @@ Benchmarks for different forms of target encoder with 10-fold cross validation.
 ![churn](figures/churn.png)
 ![dresses_sales](figures/dresses_sales.png)
 ![phishing_websites](figures/phishing_websites.png)
+![census_income_kdd](figures/census_income_kdd.png)
 
 ## How to run benchmarks
 

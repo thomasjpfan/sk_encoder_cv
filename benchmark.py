@@ -32,6 +32,7 @@ DATASET_NAMES = [
     # "adult",
     "dresses_sales",
     "phishing_websites",
+    "census_income_kdd",
 ]
 
 RESULTS_DIR = Path(".") / "results"
@@ -84,6 +85,11 @@ DATA_INFOS = {
         data_id=4534,
         is_classification=True,
     ),
+    "census_income_kdd": DataInfo(
+        data_name="census_income_kdd",
+        data_id=42750,
+        is_classification=True
+    )
 }
 
 ENCODERS = {
