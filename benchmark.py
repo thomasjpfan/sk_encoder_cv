@@ -76,11 +76,11 @@ ENCODERS = {
         SimpleImputer(strategy="constant", fill_value="sk_missing"),
         OrdinalEncoder(handle_unknown="use_encoded_value", unknown_value=-1),
     ),
-    # "SKTargetEncoder": TargetRegressorEncoder(),
-    # "SKTargetEncoderCV": TargetRegressorEncoderCV(),
-    # "SKTargetEncoderBS": TargetRegressorEncoderBS(),
-    # "JamesSteinEncoder": JamesSteinEncoder(),
-    # "JamesSteinEncoderCV": NestedEncoderCV(JamesSteinEncoder()),
+    "SKTargetEncoder": TargetRegressorEncoder(),
+    "SKTargetEncoderCV": TargetRegressorEncoderCV(),
+    "SKTargetEncoderBS": TargetRegressorEncoderBS(),
+    "JamesSteinEncoder": JamesSteinEncoder(),
+    "JamesSteinEncoderCV": NestedEncoderCV(JamesSteinEncoder()),
 }
 
 
