@@ -1,7 +1,5 @@
 from pprint import pprint
-import json
 from sklearn.datasets import fetch_openml
-from sklearn.model_selection import KFold, StratifiedKFold
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import LabelEncoder
 
@@ -65,11 +63,11 @@ def get_estimator(encoder, data_info):
     )
 
 
-def get_results_path(results_dir, data_info, encoder_str):
-    return results_dir / f"{data_info.data_name}_{encoder_str}.json"
+def get_results_path(results_dir, data_info):
+    return results_dir / f"{data_info.data_name}.csv"
 
 
-def write_results(results, results_dir, data_info, encoder_str, cv, write_results):
+def format_results(results, data_info, encoder_str, cv, meta_data):
     # process results
     output = {}
     for key, value in results.items():
@@ -78,18 +76,27 @@ def write_results(results, results_dir, data_info, encoder_str, cv, write_result
     output["encoder"] = encoder_str
     output["data_id"] = data_info.data_id
     output["data_name"] = data_info.data_name
+    output["cv"] = cv
     output["is_classification"] = data_info.is_classification
-    if isinstance(cv, KFold) or isinstance(cv, StratifiedKFold):
-        output["cv"] = str(cv)
-    else:
-        output["cv"] = cv
+    output["n_samples"] = meta_data["n_samples"]
+    output["n_features"] = meta_data["n_features"]
+    output["categorical features"] = meta_data["categorical features"]
+    output["openml_url"] = f"https://www.openml.org/d/{data_info.data_id}"
+    return output
 
-    pprint(output)
 
-    if write_results:
-        results_path = results_dir / f"{data_info.data_name}_{encoder_str}.json"
-        results_path = get_results_path(results_dir, data_info, encoder_str)
+def load_data(data_info):
+    X, y = fetch_openml_and_clean(data_info)
+    n_cats = X.select_dtypes(include=["object", "category"]).shape[1]
+    n_samples, n_features = X.shape
 
-        with results_path.open("w") as f:
-            json.dump(output, f)
-        print(f"Wrote results to {results_path}")
+    return {
+        "X": X,
+        "y": y,
+        "dataset_name": data_info.data_name,
+        "categorical features": n_cats,
+        "n_features": n_features,
+        "n_samples": n_samples,
+        "is_classification": data_info.is_classification,
+        "openml_url": f"https://www.openml.org/d/{data_info.data_id}",
+    }

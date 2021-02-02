@@ -1,0 +1,2 @@
+fit_time_mean,fit_time_std,score_time_mean,score_time_std,test_accuracy_mean,test_accuracy_std,test_roc_auc_mean,test_roc_auc_std,test_average_precision_mean,test_average_precision_std,encoder,data_id,data_name,cv,is_classification,n_samples,n_features,categorical features,openml_url
+1.0777349472045898,0.08475494384765625,0.24844861030578613,0.005488395690917969,0.9145182595269061,0.0006409300534123141,0.9724336563873273,0.005137117484120768,0.9751396929452534,0.005449792098587702,SKOrdinalEncoder,4534,phishing_websites,2,True,11055,30,30,https://www.openml.org/d/4534

@@ -12,6 +12,7 @@ setup(
         "pytest==6.2.1",
         "matplotlib",
         "category-encoders==2.2.2",
+        "tabulate",
     ],
     license="MIT",
 )

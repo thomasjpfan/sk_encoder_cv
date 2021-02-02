@@ -1,15 +1,16 @@
-from itertools import product
+from pprint import pprint
 import argparse
 from sklearn.pipeline import make_pipeline
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import OrdinalEncoder
+import pandas as pd
 
 from pathlib import Path
 from bench_utils import DataInfo
-from bench_utils import fetch_openml_and_clean
 from bench_utils import get_estimator
-from bench_utils import write_results
+from bench_utils import format_results
 from bench_utils import get_results_path
+from bench_utils import load_data
 from sklearn.model_selection import cross_validate, KFold, StratifiedKFold
 
 from category_encoders import JamesSteinEncoder
@@ -75,52 +76,69 @@ ENCODERS = {
         SimpleImputer(strategy="constant", fill_value="sk_missing"),
         OrdinalEncoder(handle_unknown="use_encoded_value", unknown_value=-1),
     ),
-    "SKTargetEncoder": TargetRegressorEncoder(),
-    "SKTargetEncoderCV": TargetRegressorEncoderCV(),
-    "SKTargetEncoderBS": TargetRegressorEncoderBS(),
-    "JamesSteinEncoder": JamesSteinEncoder(),
-    "JamesSteinEncoderCV": NestedEncoderCV(JamesSteinEncoder()),
+    # "SKTargetEncoder": TargetRegressorEncoder(),
+    # "SKTargetEncoderCV": TargetRegressorEncoderCV(),
+    # "SKTargetEncoderBS": TargetRegressorEncoderBS(),
+    # "JamesSteinEncoder": JamesSteinEncoder(),
+    # "JamesSteinEncoderCV": NestedEncoderCV(JamesSteinEncoder()),
 }
 
 
-def run_single_benchmark(data_str, encoder_str, cv, n_jobs, write_result, force):
-    print(f"running benchmark for {data_str} and {encoder_str}")
+def run_single_benchmark(data_str, cv, n_jobs, write_result, force):
+    print(f"running benchmark for {data_str}")
     data_info = DATA_INFOS[data_str]
-    encoder = ENCODERS[encoder_str]
 
-    results_path = get_results_path(RESULTS_DIR, data_info, encoder_str)
+    results_path = get_results_path(RESULTS_DIR, data_info)
     if results_path.exists() and not force:
         print(
-            f"benchmark for {data_str} and {encoder_str} exists pass --force to rerun"
+            f"benchmark for {data_str} already exist in {results_path} exists "
+            "pass --force to rerun"
         )
         return
 
-    X, y = fetch_openml_and_clean(data_info=data_info)
-    estimator = get_estimator(encoder, data_info)
-
+    meta_data = load_data(data_info=data_info)
+    X, y = meta_data["X"], meta_data["y"]
     if data_info.is_classification:
-        scoring = ["average_precision", "roc_auc", "accuracy"]
-        cv = StratifiedKFold(n_splits=cv, shuffle=True, random_state=42)
+        scoring = ["accuracy", "roc_auc", "average_precision"]
     else:
-        cv = KFold(n_splits=cv, shuffle=True, random_state=42)
-        scoring = ["neg_mean_squared_error", "r2"]
+        scoring = ["r2", "neg_mean_squared_error", "neg_median_absolute_error"]
 
-    results = cross_validate(
-        estimator,
-        X,
-        y,
-        cv=cv,
-        n_jobs=n_jobs,
-        verbose=1,
-        scoring=scoring,
-    )
-    write_results(results, RESULTS_DIR, data_info, encoder_str, cv, write_result)
+    all_results = []
+
+    for encoder_str, encoder in ENCODERS.items():
+        print(f"running benchmark for {data_str} for {encoder_str}")
+        if (
+            meta_data["categorical features"] == meta_data["n_features"]
+            and encoder_str == "drop"
+        ):
+            print("Skipping drop because all features are categorical")
+            continue
+        estimator = get_estimator(encoder, data_info)
+
+        results = cross_validate(
+            estimator,
+            X,
+            y,
+            cv=cv,
+            n_jobs=n_jobs,
+            verbose=1,
+            scoring=scoring,
+        )
+        formated_results = format_results(
+            results, data_info, encoder_str, cv, meta_data
+        )
+        pprint(formated_results)
+        all_results.append(formated_results)
+
+    if write_result:
+        results_df = pd.DataFrame.from_records(all_results)
+        print(f"Wrote results to {results_path}")
+        results_df.to_csv(results_path, index=False)
 
 
 def _run_single_benchmark(args):
     run_single_benchmark(
         data_str=args.dataset,
-        encoder_str=args.encoder,
         cv=args.cv,
         n_jobs=args.n_jobs,
         write_result=not args.no_write,
@@ -130,9 +148,9 @@ def _run_single_benchmark(args):
 
 def _run_all_benchmark(args):
     print("running all benchmarks")
-    for data_str, encoder_str in product(DATA_INFOS, ENCODERS):
+    for data_str in DATA_INFOS:
         run_single_benchmark(
-            data_str, encoder_str, args.cv, args.n_jobs, not args.no_write, args.force
+            data_str, args.cv, args.n_jobs, not args.no_write, args.force
         )
 
 
@@ -147,7 +165,6 @@ if __name__ == "__main__":
 
     single_parser = subparsers.add_parser("single", help="Run single benchmark")
     single_parser.add_argument("dataset", choices=DATA_INFOS)
-    single_parser.add_argument("encoder", choices=ENCODERS)
 
     single_parser.set_defaults(func=_run_single_benchmark)
 

@@ -1,0 +1,2 @@
+fit_time_mean,fit_time_std,score_time_mean,score_time_std,test_accuracy_mean,test_accuracy_std,test_roc_auc_mean,test_roc_auc_std,test_average_precision_mean,test_average_precision_std,encoder,data_id,data_name,cv,is_classification,n_samples,n_features,categorical features,openml_url
+1.2489670515060425,0.0364149808883667,0.47341740131378174,0.00459444522857666,0.945283621449568,0.0010087191058180123,0.7722813823403728,0.00757887911211419,0.9746603193368986,0.0014691560673534831,SKOrdinalEncoder,4135,amazon_access,2,True,32769,9,9,https://www.openml.org/d/4135
