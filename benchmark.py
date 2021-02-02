@@ -17,6 +17,8 @@ from category_encoders import JamesSteinEncoder
 from sk_encoder_cv import NestedEncoderCV
 from sk_encoder_cv import TargetRegressorEncoder, TargetRegressorEncoderBS
 from sk_encoder_cv import TargetRegressorEncoderCV
+from sk_encoder_cv import TargetRegressionBaggingEncoder
+from sk_encoder_cv import TargetRegressionBaggingEncoderBS
 
 
 DATASET_NAMES = [
@@ -91,6 +93,8 @@ ENCODERS = {
     "SKTargetEncoder": TargetRegressorEncoder(),
     "SKTargetEncoderCV": TargetRegressorEncoderCV(),
     "SKTargetEncoderBS": TargetRegressorEncoderBS(),
+    "SKTargetRegressionBaggingEncoder": TargetRegressionBaggingEncoder(),
+    "SKTargetRegressionBaggingEncoderBS": TargetRegressionBaggingEncoderBS(),
     "JamesSteinEncoder": JamesSteinEncoder(),
     "JamesSteinEncoderCV": NestedEncoderCV(JamesSteinEncoder()),
 }

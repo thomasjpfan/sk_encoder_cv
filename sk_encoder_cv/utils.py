@@ -12,29 +12,65 @@ from sklearn.utils.fixes import delayed
 
 
 def _fit_and_transform(target_transformer, X, y, train_idx, test_idx):
-    target_transformer.fit(_safe_indexing(X, train_idx),
-                           _safe_indexing(y, train_idx))
-    return target_transformer.transform(_safe_indexing(X, test_idx),
-                                        _safe_indexing(y, test_idx))
+    target_transformer.fit(_safe_indexing(X, train_idx), _safe_indexing(y, train_idx))
+    return target_transformer.transform(
+        _safe_indexing(X, test_idx), _safe_indexing(y, test_idx)
+    )
 
 
-def cross_val_transform(target_encoder,
-                        X,
-                        y=None,
-                        cv=5,
-                        classifier=False,
-                        n_jobs=None):
+def _fit_and_transform_all(target_transformer, X, y, train_idx, test_idx):
+    target_transformer.fit(_safe_indexing(X, train_idx), _safe_indexing(y, train_idx))
+    return target_transformer, target_transformer.transform(X, y)
+
+
+def _fit(target_transformer, X, y, train_idx):
+    return target_transformer.fit(
+        _safe_indexing(X, train_idx), _safe_indexing(y, train_idx)
+    )
+
+
+def cross_val_transform(target_encoder, X, y=None, cv=5, classifier=False, n_jobs=None):
     cv = check_cv(cv, y, classifier=classifier)
     splits = list(cv.split(X, y))
     transform_outputs = Parallel(n_jobs=n_jobs)(
-        delayed(_fit_and_transform)(clone(target_encoder), X, y, train_idx,
-                                    test_idx)
-        for train_idx, test_idx in splits)
+        delayed(_fit_and_transform)(clone(target_encoder), X, y, train_idx, test_idx)
+        for train_idx, test_idx in splits
+    )
 
     output = np.zeros_like(X)
     for (_, test_idx), transform_output in zip(splits, transform_outputs):
         output[test_idx] = transform_output
     return output
+
+
+def cross_val_fit(target_encoder, X, y=None, cv=5, classifier=False, n_jobs=None):
+    cv = check_cv(cv, y, classifier=classifier)
+    results = Parallel(n_jobs=n_jobs)(
+        delayed(_fit_and_transform_all)(
+            clone(target_encoder), X, y, train_idx, test_idx
+        )
+        for train_idx, test_idx in cv.split(X, y)
+    )
+    fitted_encoders = [r[0] for r in results]
+    mean_output = np.mean([r[1] for r in results], axis=0)
+    return fitted_encoders, mean_output
+
+
+def cross_val_just_fit(target_encoder, X, y=None, cv=5, classifier=False, n_jobs=None):
+    cv = check_cv(cv, y, classifier=classifier)
+    return Parallel(n_jobs=n_jobs)(
+        delayed(_fit_and_transform_all)(
+            clone(target_encoder), X, y, train_idx, test_idx
+        )
+        for train_idx, test_idx in cv.split(X, y)
+    )
+
+
+def _parallel_transform(encoders, X, y=None, n_jobs=None):
+    results = Parallel(n_jobs=n_jobs)(
+        delayed(encoder.transform)(X, y) for encoder in encoders
+    )
+    return np.mean(results, axis=0)
 
 
 def _unique(values, *, return_inverse=False, return_counts=False):
@@ -69,21 +105,21 @@ def _unique(values, *, return_inverse=False, return_counts=False):
         array. Only provided if `return_counts` is True.
     """
     if values.dtype == object:
-        return _unique_python(values,
-                              return_inverse=return_inverse,
-                              return_counts=return_counts)
+        return _unique_python(
+            values, return_inverse=return_inverse, return_counts=return_counts
+        )
     # numerical
-    return _unique_np(values,
-                      return_inverse=return_inverse,
-                      return_counts=return_counts)
+    return _unique_np(
+        values, return_inverse=return_inverse, return_counts=return_counts
+    )
 
 
 def _unique_np(values, return_inverse=False, return_counts=False):
     """Helper function to find unique values for numpy arrays that correctly
     accounts for nans. See `_unique` documentation for details."""
-    uniques = np.unique(values,
-                        return_inverse=return_inverse,
-                        return_counts=return_counts)
+    uniques = np.unique(
+        values, return_inverse=return_inverse, return_counts=return_counts
+    )
 
     inverse, counts = None, None
 
@@ -100,27 +136,28 @@ def _unique_np(values, return_inverse=False, return_counts=False):
     # here we clip the nans and remove it from uniques
     if uniques.size and is_scalar_nan(uniques[-1]):
         nan_idx = np.searchsorted(uniques, np.nan)
-        uniques = uniques[:nan_idx + 1]
+        uniques = uniques[: nan_idx + 1]
         if return_inverse:
             inverse[inverse > nan_idx] = nan_idx
 
         if return_counts:
             counts[nan_idx] = np.sum(counts[nan_idx:])
-            counts = counts[:nan_idx + 1]
+            counts = counts[: nan_idx + 1]
 
-    ret = (uniques, )
+    ret = (uniques,)
 
     if return_inverse:
-        ret += (inverse, )
+        ret += (inverse,)
 
     if return_counts:
-        ret += (counts, )
+        ret += (counts,)
 
     return ret[0] if len(ret) == 1 else ret
 
 
 class MissingValues(NamedTuple):
     """Data class for missing data information"""
+
     nan: bool
     none: bool
 
@@ -151,8 +188,7 @@ def _extract_missing(values):
         Object with missing value information.
     """
     missing_values_set = {
-        value
-        for value in values if value is None or is_scalar_nan(value)
+        value for value in values if value is None or is_scalar_nan(value)
     }
 
     if not missing_values_set:
@@ -175,6 +211,7 @@ def _extract_missing(values):
 
 class _nandict(dict):
     """Dictionary with support for nans."""
+
     def __init__(self, mapping):
         super().__init__(mapping)
         for key, value in mapping.items():
@@ -183,7 +220,7 @@ class _nandict(dict):
                 break
 
     def __missing__(self, key):
-        if hasattr(self, 'nan_value') and is_scalar_nan(key):
+        if hasattr(self, "nan_value") and is_scalar_nan(key):
             return self.nan_value
         raise KeyError(key)
 
@@ -205,15 +242,17 @@ def _unique_python(values, *, return_inverse, return_counts):
         uniques = np.array(uniques, dtype=values.dtype)
     except TypeError:
         types = sorted(t.__qualname__ for t in set(type(v) for v in values))
-        raise TypeError("Encoders require their input to be uniformly "
-                        f"strings or numbers. Got {types}")
-    ret = (uniques, )
+        raise TypeError(
+            "Encoders require their input to be uniformly "
+            f"strings or numbers. Got {types}"
+        )
+    ret = (uniques,)
 
     if return_inverse:
-        ret += (_map_to_integer(values, uniques), )
+        ret += (_map_to_integer(values, uniques),)
 
     if return_counts:
-        ret += (_get_counts(values, uniques), )
+        ret += (_get_counts(values, uniques),)
 
     return ret[0] if len(ret) == 1 else ret
 
@@ -247,7 +286,7 @@ def _encode(values, *, uniques, check_unknown=True):
     encoded : ndarray
         Encoded values
     """
-    if values.dtype.kind in 'OU':
+    if values.dtype.kind in "OU":
         try:
             return _map_to_integer(values, uniques)
         except KeyError as e:
@@ -256,8 +295,9 @@ def _encode(values, *, uniques, check_unknown=True):
         if check_unknown:
             diff = _check_unknown(values, uniques)
             if diff:
-                raise ValueError(f"y contains previously unseen labels: "
-                                 f"{str(diff)}")
+                raise ValueError(
+                    f"y contains previously unseen labels: " f"{str(diff)}"
+                )
         return np.searchsorted(uniques, values)
 
 
@@ -288,7 +328,7 @@ def _check_unknown(values, known_values, return_mask=False):
     """
     valid_mask = None
 
-    if values.dtype.kind in 'UO':
+    if values.dtype.kind in "UO":
         values_set = set(values)
         values_set, missing_in_values = _extract_missing(values_set)
 
@@ -300,9 +340,13 @@ def _check_unknown(values, known_values, return_mask=False):
         none_in_diff = missing_in_values.none and not missing_in_uniques.none
 
         def is_valid(value):
-            return (value in uniques_set
-                    or missing_in_uniques.none and value is None
-                    or missing_in_uniques.nan and is_scalar_nan(value))
+            return (
+                value in uniques_set
+                or missing_in_uniques.none
+                and value is None
+                or missing_in_uniques.nan
+                and is_scalar_nan(value)
+            )
 
         if return_mask:
             if diff or nan_in_diff or none_in_diff:
@@ -344,6 +388,7 @@ def _check_unknown(values, known_values, return_mask=False):
 
 class _NaNCounter(Counter):
     """Counter with support for nan values."""
+
     def __init__(self, items):
         super().__init__(self._generate_items(items))
 
@@ -353,12 +398,12 @@ class _NaNCounter(Counter):
             if not is_scalar_nan(item):
                 yield item
                 continue
-            if not hasattr(self, 'nan_count'):
+            if not hasattr(self, "nan_count"):
                 self.nan_count = 0
             self.nan_count += 1
 
     def __missing__(self, key):
-        if hasattr(self, 'nan_count') and is_scalar_nan(key):
+        if hasattr(self, "nan_count") and is_scalar_nan(key):
             return self.nan_count
         raise KeyError(key)
 
@@ -369,7 +414,7 @@ def _get_counts(values, uniques):
 
     For non-object dtypes, `uniques` is assumed to be sorted.
     """
-    if values.dtype.kind in 'OU':
+    if values.dtype.kind in "OU":
         counter = _NaNCounter(values)
         output = np.zeros(len(uniques), dtype=np.int64)
         for i, item in enumerate(uniques):
@@ -384,8 +429,7 @@ def _get_counts(values, uniques):
     if np.isnan(unique_values[-1]) and np.isnan(uniques[-1]):
         uniques_in_values[-1] = True
 
-    unique_valid_indices = np.searchsorted(unique_values,
-                                           uniques[uniques_in_values])
+    unique_valid_indices = np.searchsorted(unique_values, uniques[uniques_in_values])
 
     output = np.zeros_like(uniques, dtype=np.int64)
     output[uniques_in_values] = counts[unique_valid_indices]

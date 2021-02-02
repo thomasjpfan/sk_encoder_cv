@@ -5,7 +5,7 @@ from sklearn.utils.validation import column_or_1d
 from sklearn.preprocessing import LabelEncoder
 from sklearn.utils.validation import check_is_fitted
 from .base import _BaseEncoder
-from .base import NestedEncoderCV
+from .base import NestedEncoderCV, BaggingEncoder
 
 
 class _TargetEncoder(ABC, _BaseEncoder):
@@ -209,6 +209,28 @@ class TargetClassifierEncoderCV(NestedEncoderCV):
         )
 
 
+class TargetClassifierBaggingEncoder(BaggingEncoder):
+    def __init__(self, categories="auto", n_jobs=None, cv=5):
+        self.categories = categories
+        super().__init__(
+            n_jobs=n_jobs,
+            cv=cv,
+            classifier=False,
+            encoder=TargetRegressorEncoder(categories=self.categories),
+        )
+
+
+class TargetRegressionBaggingEncoder(BaggingEncoder):
+    def __init__(self, categories="auto", n_jobs=None, cv=5):
+        self.categories = categories
+        super().__init__(
+            n_jobs=n_jobs,
+            cv=cv,
+            classifier=True,
+            encoder=TargetClassifierEncoder(categories=self.categories),
+        )
+
+
 class _TargetEncoderBS(ABC, _BaseEncoder):
     """Target Encoder with Bühlmann-Straub estimation."""
 
@@ -385,3 +407,25 @@ class TargetRegressorEncoderBS(_TargetEncoderBS):
 class TargetClassifierEncoderBS(_TargetEncoderBS):
     def _encode_y(self, y):
         return LabelEncoder().fit_transform(y)
+
+
+class TargetClassifierBaggingEncoderBS(BaggingEncoder):
+    def __init__(self, categories="auto", n_jobs=None, cv=5):
+        self.categories = categories
+        super().__init__(
+            n_jobs=n_jobs,
+            cv=cv,
+            classifier=False,
+            encoder=TargetRegressorEncoderBS(categories=self.categories),
+        )
+
+
+class TargetRegressionBaggingEncoderBS(BaggingEncoder):
+    def __init__(self, categories="auto", n_jobs=None, cv=5):
+        self.categories = categories
+        super().__init__(
+            n_jobs=n_jobs,
+            cv=cv,
+            classifier=True,
+            encoder=TargetClassifierEncoderBS(categories=self.categories),
+        )

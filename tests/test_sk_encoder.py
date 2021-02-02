@@ -16,6 +16,8 @@ from sk_encoder_cv import (
     TargetRegressorEncoder,
     TargetRegressorEncoderCV,
     TargetRegressorEncoderBS,
+    TargetRegressionBaggingEncoder,
+    TargetRegressionBaggingEncoderBS,
 )
 from category_encoders import JamesSteinEncoder
 from sklearn.preprocessing import LabelEncoder
@@ -25,7 +27,7 @@ DATA_PATH = Path(".") / "data"
 
 @pytest.mark.parametrize(
     "encoder",
-    [TargetClassifierEncoder(), TargetClassifierEncoderCV(), JamesSteinEncoder(),],
+    [TargetClassifierEncoder(), TargetClassifierEncoderCV(), JamesSteinEncoder()],
 )
 def test_adult(encoder):
     """Smoke test for adult dataset."""
@@ -61,6 +63,8 @@ def test_adult(encoder):
         TargetRegressorEncoderCV(),
         TargetRegressorEncoderBS(),
         JamesSteinEncoder(),
+        TargetRegressionBaggingEncoder(),
+        TargetRegressionBaggingEncoderBS(),
     ],
 )
 def test_ames(encoder):

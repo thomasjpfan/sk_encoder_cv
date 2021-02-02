@@ -1,4 +1,3 @@
-from abc import ABC
 import numpy as np
 
 from sklearn.utils.validation import check_array
@@ -7,7 +6,12 @@ from sklearn.base import BaseEstimator
 from sklearn.base import clone
 
 from .utils import _encode, _check_unknown, _unique, _get_counts
-from .utils import cross_val_transform
+from .utils import (
+    cross_val_transform,
+    cross_val_fit,
+    cross_val_just_fit,
+    _parallel_transform,
+)
 
 
 class _BaseEncoder(TransformerMixin, BaseEstimator):
@@ -174,7 +178,7 @@ class _BaseEncoder(TransformerMixin, BaseEstimator):
         return {"X_types": ["categorical"]}
 
 
-class NestedEncoderCV(ABC, TransformerMixin, BaseEstimator):
+class NestedEncoderCV(TransformerMixin, BaseEstimator):
     def __init__(self, encoder, n_jobs=None, cv=5, classifier=False):
         self.encoder = encoder
         self.n_jobs = n_jobs
@@ -200,4 +204,37 @@ class NestedEncoderCV(ABC, TransformerMixin, BaseEstimator):
         # should never be called; warn here?
         self.encoder_ = clone(self.encoder)
         self.encoder_.fit(X, y)
+        return self
+
+
+class BaggingEncoder(TransformerMixin, BaseEstimator):
+    def __init__(self, encoder, n_jobs=None, cv=5, classifier=False):
+        self.encoder = encoder
+        self.n_jobs = n_jobs
+        self.cv = cv
+        self.classifier = classifier
+
+    def fit_transform(self, X, y):
+        self.fitted_encoders_, output = cross_val_fit(
+            self.encoder,
+            X,
+            y,
+            cv=self.cv,
+            classifier=self.classifier,
+            n_jobs=self.n_jobs,
+        )
+        return output
+
+    def transform(self, X, y=None):
+        return _parallel_transform(self.fitted_encoders_, X, y, self.n_jobs)
+
+    def fit(self, X, y):
+        self.fitted_encoders_ = cross_val_just_fit(
+            self.encoder,
+            X,
+            y,
+            cv=self.cv,
+            classifier=self.classifier,
+            n_jobs=self.n_jobs,
+        )
         return self
