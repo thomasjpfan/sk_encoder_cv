@@ -19,6 +19,7 @@ from sk_encoder_cv import TargetRegressorEncoder, TargetRegressorEncoderBS
 from sk_encoder_cv import TargetRegressorEncoderCV
 from sk_encoder_cv import TargetRegressionBaggingEncoder
 from sk_encoder_cv import TargetRegressionBaggingEncoderBS
+from sk_encoder_cv import TargetRegressorEncoderCVBS
 
 
 DATASET_NAMES = [
@@ -93,6 +94,7 @@ ENCODERS = {
     "SKTargetEncoder": TargetRegressorEncoder(),
     "SKTargetEncoderCV": TargetRegressorEncoderCV(),
     "SKTargetEncoderBS": TargetRegressorEncoderBS(),
+    "TargetRegressorEncoderCVBS": TargetRegressorEncoderCVBS(),
     "SKTargetRegressionBaggingEncoder": TargetRegressionBaggingEncoder(),
     "SKTargetRegressionBaggingEncoderBS": TargetRegressionBaggingEncoderBS(),
     "JamesSteinEncoder": JamesSteinEncoder(),
@@ -105,12 +107,12 @@ def run_single_benchmark(data_str, cv, n_jobs, write_result, force):
     data_info = DATA_INFOS[data_str]
 
     results_path = get_results_path(RESULTS_DIR, data_info)
-    if results_path.exists() and not force:
-        print(
-            f"benchmark for {data_str} already exist in {results_path} exists "
-            "pass --force to rerun"
-        )
-        return
+    previous_results_df = None
+    encoder_names = []
+
+    if results_path.exist() and not force:
+        previous_results_df = pd.read_csv(results_path)
+        encoder_names = previous_results_df["encoder"].tolist()
 
     meta_data = load_data(data_info=data_info)
     X, y = meta_data["X"], meta_data["y"]
@@ -122,7 +124,12 @@ def run_single_benchmark(data_str, cv, n_jobs, write_result, force):
     all_results = []
 
     for encoder_str, encoder in ENCODERS.items():
-        print(f"running benchmark for {data_str} for {encoder_str}")
+        if encoder_str in encoder_names:
+            print(f"{encoder_str} already evaluated on {data_str} use --force to rerun")
+            continue
+        else:
+            print(f"running benchmark for {data_str} for {encoder_str}")
+
         if (
             meta_data["categorical features"] == meta_data["n_features"]
             and encoder_str == "drop"
@@ -148,6 +155,9 @@ def run_single_benchmark(data_str, cv, n_jobs, write_result, force):
 
     if write_result:
         results_df = pd.DataFrame.from_records(all_results)
+        if previous_results_df is not None:
+            results_df = pd.concat([results_df, previous_results_df], axis=0)
+
         print(f"Wrote results to {results_path}")
         results_df.to_csv(results_path, index=False)
 

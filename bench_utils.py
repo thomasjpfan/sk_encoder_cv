@@ -1,4 +1,3 @@
-from pprint import pprint
 from sklearn.datasets import fetch_openml
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import LabelEncoder

@@ -409,6 +409,28 @@ class TargetClassifierEncoderBS(_TargetEncoderBS):
         return LabelEncoder().fit_transform(y)
 
 
+class TargetRegressorEncoderCVBS(NestedEncoderCV):
+    def __init__(self, categories="auto", n_jobs=None, cv=5):
+        self.categories = categories
+        super().__init__(
+            n_jobs=n_jobs,
+            cv=cv,
+            classifier=False,
+            encoder=TargetRegressorEncoderBS(categories=self.categories),
+        )
+
+
+class TargetClassifierEncoderCVBS(NestedEncoderCV):
+    def __init__(self, categories="auto", n_jobs=None, cv=5):
+        self.categories = categories
+        super().__init__(
+            n_jobs=n_jobs,
+            cv=cv,
+            classifier=True,
+            encoder=TargetClassifierEncoderBS(categories=self.categories),
+        )
+
+
 class TargetClassifierBaggingEncoderBS(BaggingEncoder):
     def __init__(self, categories="auto", n_jobs=None, cv=5):
         self.categories = categories
