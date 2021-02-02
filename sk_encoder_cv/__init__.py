@@ -339,9 +339,11 @@ class _TargetEncoderBS(ABC, _BaseEncoder):
             # tau^2
             tau2 = np.average((cat_means - y_mean) ** 2, weights=cat_weight)
             tau2 *= n_cats / (n_cats - 1)
-            tau2_biased = tau2
+            # tau2_biased = tau2
             tau2 -= n_cats * sigma2 / np.sum(cat_weight)
-            c = 1.0 / np.average(1 - cat_weight / np.sum(cat_weight), weights=cat_weight)
+            c = 1.0 / np.average(
+                1 - cat_weight / np.sum(cat_weight), weights=cat_weight
+            )
             c *= (n_cats - 1) / n_cats
             tau2 *= c
             tau2 = max(0, tau2)

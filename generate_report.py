@@ -3,22 +3,12 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from benchmark import DATASET_NAMES
 
 RESULTS_PATH = Path("results")
 FIGURES_PATH = Path("figures")
 README_PATH = Path("README.md")
 
-DATASET_NAMES = [
-    "telco",
-    "amazon_access",
-    "kicks",
-    "taxi",
-    "ames",
-    "churn",
-    "adult",
-    "dresses_sales",
-    "phishing_websites",
-]
 FIGURES_PNG_PATHS = [FIGURES_PATH / f"{name}.png" for name in DATASET_NAMES]
 MD_DATASET_COLUMNS = [
     "data_name",

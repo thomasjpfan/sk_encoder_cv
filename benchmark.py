@@ -11,13 +11,25 @@ from bench_utils import get_estimator
 from bench_utils import format_results
 from bench_utils import get_results_path
 from bench_utils import load_data
-from sklearn.model_selection import cross_validate, KFold, StratifiedKFold
+from sklearn.model_selection import cross_validate
 
 from category_encoders import JamesSteinEncoder
 from sk_encoder_cv import NestedEncoderCV
 from sk_encoder_cv import TargetRegressorEncoder, TargetRegressorEncoderBS
 from sk_encoder_cv import TargetRegressorEncoderCV
 
+
+DATASET_NAMES = [
+    "telco",
+    "amazon_access",
+    "kicks",
+    # "taxi",
+    # "ames",
+    "churn",
+    # "adult",
+    "dresses_sales",
+    "phishing_websites",
+]
 
 RESULTS_DIR = Path(".") / "results"
 DATA_DIR = Path(".") / "data"
@@ -149,6 +161,8 @@ def _run_single_benchmark(args):
 def _run_all_benchmark(args):
     print("running all benchmarks")
     for data_str in DATA_INFOS:
+        if data_str not in DATASET_NAMES:
+            continue
         run_single_benchmark(
             data_str, args.cv, args.n_jobs, not args.no_write, args.force
         )

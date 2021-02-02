@@ -1,5 +1,4 @@
 from abc import ABC
-from abc import abstractmethod
 import numpy as np
 
 from sklearn.utils.validation import check_array
