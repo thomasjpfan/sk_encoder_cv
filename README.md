@@ -58,3 +58,9 @@ python benchmark.py --cv 5 --n-jobs 8 all
 ```
 
 The results will be written into the `results` directory.
+
+4. Generate README report:
+
+```bash
+python generate_report.py
+```

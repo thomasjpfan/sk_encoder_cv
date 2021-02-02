@@ -29,6 +29,10 @@ MD_DATASET_COLUMNS = [
     "openml_url",
 ]
 
+# These datasts have very low performance for drop when compared to
+# all the other encoders
+DATASET_TO_REMOVE_DROP = {"adult"}
+
 
 def plot_metric_for_name(
     data_name, metric_name, results_df, ax=None, remove_drop=False
@@ -57,7 +61,7 @@ def plot_metric_for_name(
     ax.set_title(f"{data_name}: {metric_name}")
 
 
-def plot_all_metrics(data_name, results_df, remove_drop=False):
+def plot_all_metrics(data_name, results_df):
     results_data_name = results_df[results_df["data_name"] == data_name]
     info_first = results_data_name.iloc[0]
 
@@ -73,6 +77,7 @@ def plot_all_metrics(data_name, results_df, remove_drop=False):
     )
 
     for metric_name, ax in zip(metric_names, axes.flatten()):
+        remove_drop = data_name in DATASET_TO_REMOVE_DROP
         plot_metric_for_name(
             data_name, metric_name, results_df, ax=ax, remove_drop=remove_drop
         )
@@ -150,6 +155,12 @@ python benchmark.py --cv 5 --n-jobs 8 all
 ```
 
 The results will be written into the `results` directory.
+
+4. Generate README report:
+
+```bash
+python generate_report.py
+```
 """
 
 with README_PATH.open("w") as f:
