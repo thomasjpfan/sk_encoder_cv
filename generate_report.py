@@ -30,10 +30,34 @@ def plot_metric_for_name(
     if ax is None:
         fig = figure.Figure()
         ax = fig.subplots()
-    results_data_name = results_df[results_df["data_name"] == data_name]
+    results_data_name = results_df[results_df["data_name"] == data_name].copy()
 
     info_first = results_data_name.iloc[0]
     data_name = info_first["data_name"]
+
+    # rename long names
+    mapping = {
+        "drop": "drop",
+        "SKOrdinalEncoder": "Oridinal",
+        "SKTargetEncoder": "Target",
+        "SKTargetEncoderCV": "TargetCV",
+        "SKTargetEncoderBS": "TargetBS",
+        "TargetRegressorEncoderCVBS": "TargetCVBS",
+        "SKTargetRegressionBaggingEncoder": "TargetBag",
+        "SKTargetRegressionBaggingEncoderBS": "TargetBagBS",
+        "JamesSteinEncoder": "James",
+        "JamesSteinEncoderCV": "JamesCV",
+    }
+
+    def map_it(item):
+        return mapping.get(item, item)
+
+    results_data_name["encoder"] = results_data_name["encoder"].map(map_it)
+    # Remove James
+    results_data_name = results_data_name[
+        ~results_data_name["encoder"].str.startswith("James")
+    ]
+
     results_data_name_sorted = results_data_name.sort_values(f"test_{metric_name}_mean")
     null_encoders = ~results_data_name_sorted[f"test_{metric_name}_mean"].isna()
     if remove_drop:
