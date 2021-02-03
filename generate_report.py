@@ -53,10 +53,6 @@ def plot_metric_for_name(
         return mapping.get(item, item)
 
     results_data_name["encoder"] = results_data_name["encoder"].map(map_it)
-    # Remove James
-    results_data_name = results_data_name[
-        ~results_data_name["encoder"].str.startswith("James")
-    ]
 
     results_data_name_sorted = results_data_name.sort_values(f"test_{metric_name}_mean")
     null_encoders = ~results_data_name_sorted[f"test_{metric_name}_mean"].isna()
@@ -72,8 +68,10 @@ def plot_metric_for_name(
         marker="o",
     )
     ax.set_yticks(y_values)
-    ax.set_yticklabels(results_data_name_sorted.loc[null_encoders, "encoder"])
-    ax.set_title(f"{data_name}: {metric_name}")
+    ax.set_yticklabels(
+        results_data_name_sorted.loc[null_encoders, "encoder"], fontsize=18
+    )
+    ax.set_title(f"{data_name}: {metric_name}", fontsize=18)
 
 
 def plot_all_metrics(data_name, results_df):
