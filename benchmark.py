@@ -34,6 +34,23 @@ DATASET_NAMES = [
     "phishing_websites",
     "census_income_kdd",
     "porto_seguro",
+    "Allstate_Claims_Severity",
+    "SpeedDating",
+    "medical_charges_nominal",
+    "Bike_Sharing_Demand",
+    "Brazilian_houses",
+    "delays_zurich_transport",
+    # "nyc-taxi-green-dec-2016",
+    "black_friday",
+    "colleges",
+    # "la_crimes",
+    "particulate-matter-ukair-2017",
+    "kdd_internet_usage",
+    "KDDCup09_upselling",
+    "KDDCup09_appetency",
+    "nomao",
+    "rl",
+    "sf-police-incidents",
 ]
 
 RESULTS_DIR = Path(".") / "results"
@@ -97,6 +114,87 @@ DATA_INFOS = {
         data_id=42571,
         is_classification=False,
     ),
+    "SpeedDating": DataInfo(
+        data_name="SpeedDating",
+        data_id=40536,
+        is_classification=True,
+    ),
+    "medical_charges_nominal": DataInfo(
+        data_name="medical_charges_nominal",
+        data_id=42559,
+        is_classification=False,
+    ),
+    "Bike_Sharing_Demand": DataInfo(
+        data_name="Bike_Sharing_Demand",
+        data_id=42712,
+        is_classification=False,
+    ),
+    "Brazilian_houses": DataInfo(
+        data_name="Brazilian_houses",
+        data_id=42688,
+        is_classification=False,
+    ),
+    "delays_zurich_transport": DataInfo(
+        data_name="delays_zurich_transport",
+        data_id=42495,
+        is_classification=False,
+    ),
+    "nyc-taxi-green-dec-2016": DataInfo(
+        data_name="nyc-taxi-green-dec-2016",
+        data_id=42208,
+        is_classification=False
+    ),
+    "black_friday": DataInfo(
+        data_name="black_friday",
+        data_id=41540,
+        is_classification=False,
+    ),
+    "colleges": DataInfo(
+        data_name="colleges",
+        data_id=42159,
+        is_classification=False,
+    ),
+    "la_crimes": DataInfo(
+        data_name="la_crimes",
+        data_id=42160,
+        is_classification=False,
+    ),
+   "particulate-matter-ukair-2017": DataInfo(
+       data_name="particulate-matter-ukair-2017",
+       data_id=42207,
+       is_classification=False,
+   ),
+   "kdd_internet_usage": DataInfo(
+       data_name="kdd_internet_usage",
+       data_id=981,
+       is_classification=True,
+   ),
+   "KDDCup09_upselling": DataInfo(
+       data_name="KDDCup09_upselling",
+       data_id=1114,
+       is_classification=True,
+   ),
+   "KDDCup09_appetency": DataInfo(
+       data_name="KDDCup09_appetency",
+       data_id=1111,
+       is_classification=True,
+   ),
+   "nomao": DataInfo(
+       data_name="nomao",
+       data_id=1486,
+       is_classification=True,
+   ),
+   "rl": DataInfo(
+       data_name="rl",
+       data_id=41160,
+       is_classification=True,
+   ),
+   "sf-police-incidents": DataInfo(
+       data_name="sf-police-incidents",
+       data_id=42732,
+       is_classification=True,
+   )
+
 }
 
 ENCODERS = {
@@ -122,11 +220,15 @@ def run_single_benchmark(data_str, cv, n_jobs, write_result, force):
 
     results_path = get_results_path(RESULTS_DIR, data_info)
     previous_results_df = None
-    encoder_names = []
+    encoder_names = set([])
 
     if results_path.exists() and not force:
         previous_results_df = pd.read_csv(results_path)
-        encoder_names = previous_results_df["encoder"].tolist()
+        encoder_names = set(previous_results_df["encoder"].tolist())
+
+    if len(set(ENCODERS) - encoder_names) == 0:
+        print(f"{data_str} already benchmarked use --force to rerun")
+        return
 
     meta_data = load_data(data_info=data_info)
     X, y = meta_data["X"], meta_data["y"]

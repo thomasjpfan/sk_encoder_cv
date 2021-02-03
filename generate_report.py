@@ -1,6 +1,6 @@
 """Used to generate README with the results of runs."""
 from pathlib import Path
-import matplotlib.pyplot as plt
+from matplotlib import figure
 import numpy as np
 import pandas as pd
 from benchmark import DATASET_NAMES
@@ -21,14 +21,15 @@ MD_DATASET_COLUMNS = [
 
 # These datasts have very low performance for drop when compared to
 # all the other encoders
-DATASET_TO_REMOVE_DROP = {"adult"}
+DATASET_TO_REMOVE_DROP = {"adult", "Allstate_Claims_Severity"}
 
 
 def plot_metric_for_name(
     data_name, metric_name, results_df, ax=None, remove_drop=False
 ):
     if ax is None:
-        fig, ax = plt.subplots()
+        fig = figure.Figure()
+        ax = fig.subplots()
     results_data_name = results_df[results_df["data_name"] == data_name]
 
     info_first = results_data_name.iloc[0]
@@ -62,9 +63,8 @@ def plot_all_metrics(data_name, results_df):
 
     metric_names = [name[5:-5] for name in score_means_names]
 
-    fig, axes = plt.subplots(
-        1, len(metric_names), figsize=(20, 6), constrained_layout=True
-    )
+    fig = figure.Figure(figsize=(20, 6), constrained_layout=True)
+    axes = fig.subplots(1, len(metric_names))
 
     for metric_name, ax in zip(metric_names, axes.flatten()):
         remove_drop = data_name in DATASET_TO_REMOVE_DROP
