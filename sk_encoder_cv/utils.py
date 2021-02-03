@@ -18,7 +18,7 @@ def _fit_and_transform(target_transformer, X, y, train_idx, test_idx):
     )
 
 
-def _fit_and_transform_all(target_transformer, X, y, train_idx, test_idx):
+def _fit_and_transform_all(target_transformer, X, y, train_idx):
     target_transformer.fit(_safe_indexing(X, train_idx), _safe_indexing(y, train_idx))
     return target_transformer, target_transformer.transform(X, y)
 
@@ -44,12 +44,14 @@ def cross_val_transform(target_encoder, X, y=None, cv=5, classifier=False, n_job
 
 
 def cross_val_fit(target_encoder, X, y=None, cv=5, classifier=False, n_jobs=None):
-    cv = check_cv(cv, y, classifier=classifier)
+    rng = np.random.RandomState(42)
+    n_samples = X.shape[0]
+
     results = Parallel(n_jobs=n_jobs)(
         delayed(_fit_and_transform_all)(
-            clone(target_encoder), X, y, train_idx, test_idx
+            clone(target_encoder), X, y, rng.randint(0, n_samples, n_samples)
         )
-        for train_idx, test_idx in cv.split(X, y)
+        for _ in range(cv)
     )
     fitted_encoders = [r[0] for r in results]
     mean_output = np.mean([r[1] for r in results], axis=0)
@@ -57,12 +59,11 @@ def cross_val_fit(target_encoder, X, y=None, cv=5, classifier=False, n_jobs=None
 
 
 def cross_val_just_fit(target_encoder, X, y=None, cv=5, classifier=False, n_jobs=None):
-    cv = check_cv(cv, y, classifier=classifier)
+    rng = np.random.RandomState(42)
+    n_samples = X.shape[0]
     return Parallel(n_jobs=n_jobs)(
-        delayed(_fit_and_transform_all)(
-            clone(target_encoder), X, y, train_idx, test_idx
-        )
-        for train_idx, test_idx in cv.split(X, y)
+        delayed(_fit)(clone(target_encoder), X, y, rng.randint(0, n_samples, n_samples))
+        for _ in range(cv)
     )
 
 
