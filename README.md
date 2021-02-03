@@ -14,13 +14,11 @@ Benchmarks for different forms of target encoder with 10-fold cross validation.
 | SpeedDating             |                     61 |          120 |        8378 | True                | https://www.openml.org/d/40536 |
 | medical_charges_nominal |                      8 |           11 |      163065 | False               | https://www.openml.org/d/42559 |
 | Bike_Sharing_Demand     |                      4 |           12 |       17379 | False               | https://www.openml.org/d/42712 |
-| delays_zurich_transport |                      5 |           17 |       27327 | False               | https://www.openml.org/d/42495 |
 | black_friday            |                      4 |            9 |      166821 | False               | https://www.openml.org/d/41540 |
 | colleges                |                     17 |           49 |        7063 | False               | https://www.openml.org/d/42159 |
 | KDDCup09_upselling      |                     38 |          230 |       50000 | True                | https://www.openml.org/d/1114  |
 | KDDCup09_appetency      |                     38 |          230 |       50000 | True                | https://www.openml.org/d/1111  |
 | rl                      |                     14 |           22 |       31406 | True                | https://www.openml.org/d/41160 |
-| sf-police-incidents     |                      5 |            8 |     2215023 | True                | https://www.openml.org/d/42732 |
 
 ## Results
 
@@ -32,13 +30,11 @@ Benchmarks for different forms of target encoder with 10-fold cross validation.
 ![SpeedDating](figures/SpeedDating.png)
 ![medical_charges_nominal](figures/medical_charges_nominal.png)
 ![Bike_Sharing_Demand](figures/Bike_Sharing_Demand.png)
-![delays_zurich_transport](figures/delays_zurich_transport.png)
 ![black_friday](figures/black_friday.png)
 ![colleges](figures/colleges.png)
 ![KDDCup09_upselling](figures/KDDCup09_upselling.png)
 ![KDDCup09_appetency](figures/KDDCup09_appetency.png)
 ![rl](figures/rl.png)
-![sf-police-incidents](figures/sf-police-incidents.png)
 
 ## How to run benchmarks
 

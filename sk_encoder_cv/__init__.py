@@ -210,7 +210,7 @@ class TargetClassifierEncoderCV(NestedEncoderCV):
 
 
 class TargetClassifierBaggingEncoder(BaggingEncoder):
-    def __init__(self, categories="auto", n_jobs=None, cv=5):
+    def __init__(self, categories="auto", n_jobs=None, cv=10):
         self.categories = categories
         super().__init__(
             n_jobs=n_jobs,
@@ -221,7 +221,7 @@ class TargetClassifierBaggingEncoder(BaggingEncoder):
 
 
 class TargetRegressionBaggingEncoder(BaggingEncoder):
-    def __init__(self, categories="auto", n_jobs=None, cv=5):
+    def __init__(self, categories="auto", n_jobs=None, cv=10):
         self.categories = categories
         super().__init__(
             n_jobs=n_jobs,
@@ -432,7 +432,7 @@ class TargetClassifierEncoderCVBS(NestedEncoderCV):
 
 
 class TargetClassifierBaggingEncoderBS(BaggingEncoder):
-    def __init__(self, categories="auto", n_jobs=None, cv=5):
+    def __init__(self, categories="auto", n_jobs=None, cv=10):
         self.categories = categories
         super().__init__(
             n_jobs=n_jobs,
@@ -443,7 +443,7 @@ class TargetClassifierBaggingEncoderBS(BaggingEncoder):
 
 
 class TargetRegressionBaggingEncoderBS(BaggingEncoder):
-    def __init__(self, categories="auto", n_jobs=None, cv=5):
+    def __init__(self, categories="auto", n_jobs=None, cv=10):
         self.categories = categories
         super().__init__(
             n_jobs=n_jobs,

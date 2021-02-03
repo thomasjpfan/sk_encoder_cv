@@ -23,34 +23,35 @@ from sk_encoder_cv import TargetRegressorEncoderCVBS
 
 
 DATASET_NAMES = [
-    "telco",
-    "amazon_access",
-    "kicks",
     # "taxi",
     # "ames",
     # "churn",
     # "adult",
-    "dresses_sales",
-    "phishing_websites",
     # "census_income_kdd",
     # "porto_seguro",
     # "Allstate_Claims_Severity",
-    "SpeedDating",
-    "medical_charges_nominal",
-    "Bike_Sharing_Demand",
     # "Brazilian_houses",
     # "delays_zurich_transport",
     # "nyc-taxi-green-dec-2016",
-    "black_friday",
-    "colleges",
     # "la_crimes",
     # "particulate-matter-ukair-2017",
     # "kdd_internet_usage",
+    # "nomao",
+    ###
+    "telco",
+    "amazon_access",
+    "kicks",
+    "dresses_sales",
+    "phishing_websites",
+    "SpeedDating",
+    "medical_charges_nominal",
+    "Bike_Sharing_Demand",
+    "black_friday",
+    "colleges",
     "KDDCup09_upselling",
     "KDDCup09_appetency",
-    # "nomao",
     "rl",
-    "sf-police-incidents",
+    # "sf-police-incidents",
 ]
 
 RESULTS_DIR = Path(".") / "results"
@@ -287,9 +288,7 @@ def _run_single_benchmark(args):
 
 def _run_all_benchmark(args):
     print("running all benchmarks")
-    for data_str in DATA_INFOS:
-        if data_str not in DATASET_NAMES:
-            continue
+    for data_str in DATASET_NAMES:
         run_single_benchmark(
             data_str, args.cv, args.n_jobs, not args.no_write, args.force
         )
