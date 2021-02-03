@@ -53,6 +53,10 @@ def plot_metric_for_name(
         return mapping.get(item, item)
 
     results_data_name["encoder"] = results_data_name["encoder"].map(map_it)
+    # Remove James
+    results_data_name = results_data_name[
+        ~results_data_name["encoder"].str.startswith("James")
+    ]
 
     results_data_name_sorted = results_data_name.sort_values(f"test_{metric_name}_mean")
     null_encoders = ~results_data_name_sorted[f"test_{metric_name}_mean"].isna()
